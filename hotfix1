@@ -1,0 +1,52 @@
+#!/bin/bash -u
+# sh options:
+# -u  Treat unset variables as an error when substituting
+#
+# hotfix1 - clean logs aggressively
+
+verbose=false
+currentUser=`whoami`
+
+if ! test $currentUser = root; then
+	echo You must be root to run hotfix1
+	exit 1
+fi
+
+usage() {
+    echo 'usage: hotfix1'
+    exit 0
+}
+
+showVarDiskspace() {
+	du -sm /var/log/sdp /var/log/journal /var/lib/docker
+}
+
+showDiskspace() {
+	echo current disk space
+	df -h / /tmp /var /home
+	du -sm /home/* | sort -nr
+	du -sm /home/sdp/* | sort -nr
+	du -sm /home/sdp/nomad/alloc/* | sort -nr
+	du -sm /var/lib/docker/* | sort -nr
+	showVarDiskspace
+}
+
+cleanDiskspace() {
+	echo disk space cleanup
+	rm -f /var/log/sdp/docker/docker.log?*
+	rm -f /var/log/sdp/journald_docker/journald_docker.log?*
+}
+
+changeLogRotation() {
+	echo setup rapid logfile rotation
+	crontab -l > root.crontab
+	sed s/0/*/ < root.crontab > new.crontab
+	crontab new.crontab
+}
+
+showDiskspace
+cleanDiskspace
+changeLogRotation
+showVarDiskspace
+
+exit 0
