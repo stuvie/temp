@@ -18,7 +18,7 @@ usage() {
 }
 
 showVarDiskspace() {
-	du -sm /var/log/sdp /var/log/journal /var/lib/docker
+	du -sm /var/log/sdp /var/log/journal /var/lib/docker /var/cache/apt
 }
 
 showDiskspace() {
@@ -33,8 +33,11 @@ showDiskspace() {
 
 cleanDiskspace() {
 	echo disk space cleanup
+	rm -f /home/vagrant/*.iso
 	rm -f /var/log/sdp/docker/docker.log?*
-	rm -f /var/log/sdp/journald_docker/journald_docker.log?*
+	apt clean
+	echo 'SystemMaxUse=100M' >> /etc/systemd/journald.conf
+	systemctl restart systemd-journald
 }
 
 changeLogRotation() {
