@@ -52,5 +52,6 @@ showDiskspace
 cleanDiskspace
 changeLogRotation
 showVarDiskspace
+df -h / /tmp /var /home
 
 exit 0
