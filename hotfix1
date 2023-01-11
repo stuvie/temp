@@ -13,8 +13,8 @@ if ! test $currentUser = root; then
 fi
 
 usage() {
-    echo 'usage: hotfix1'
-    exit 0
+	echo 'usage: hotfix1'
+	exit 0
 }
 
 showVarDiskspace() {
@@ -35,6 +35,7 @@ cleanDiskspace() {
 	echo disk space cleanup
 	rm -f /home/vagrant/*.iso
 	rm -f /var/log/sdp/docker/docker.log?*
+	apt remove linux-image-5.10.0-8-amd64 --purge -y
 	apt clean
 	echo 'SystemMaxUse=100M' >> /etc/systemd/journald.conf
 	systemctl restart systemd-journald
